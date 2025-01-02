@@ -1,0 +1,9 @@
+openai
+pinecone-client
+langchain
+pypdf
+tqdm
+streamlit
+numpy
+pandas
+python-dotenv
