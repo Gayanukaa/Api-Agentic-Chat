@@ -5,6 +5,7 @@ __pycache__/
 
 # Folders
 reference_docs
+data
 
 # C extensions
 *.so
