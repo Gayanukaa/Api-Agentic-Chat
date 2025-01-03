@@ -3,10 +3,12 @@ from src.api_selector import APISelectorAgent
 import os
 
 # File paths
-FAISS_INDEX_FILE = "data/embeddings/faiss_index2"
-METADATA_FILE = "data/embeddings/metadata2.json"
+FAISS_INDEX_FILE = "data/embeddings/faiss_index"
+METADATA_FILE = "data/embeddings/metadata.json"
 
-agent = APISelectorAgent(FAISS_INDEX_FILE, METADATA_FILE)
+# Initialize API Selector Agent
+api_key = os.getenv("OPENAI_API_KEY")
+agent = APISelectorAgent(FAISS_INDEX_FILE, METADATA_FILE, api_key)
 
 # Streamlit Interface
 st.title("API Selector Chatbot")
@@ -25,12 +27,19 @@ if st.button("Search API"):
         if results:
             st.success("Here are the most relevant APIs:")
             for i, result in enumerate(results):
-                st.write(f"### Match {i+1}")
-                st.write(f"**Endpoint:** {result['metadata'].get('endpoint', 'N/A')}")
-                st.write(f"**Text:** {result['text']}")
-                st.write(f"**Distance:** {result['distance']:.4f}")
+                st.markdown(f"### Match {i+1}")
+                if result['endpoint']:
+                    st.markdown(f"**Endpoint:** `{result['endpoint']}`")
+                st.markdown(f"**Description:** {result['description']}")
+                if result['body']:  # Only show body if it exists
+                    st.markdown("**API Body:**")
+                    st.json(result['body'])
+                st.markdown(f"**File Name:** {result['file_name']}")
+                st.markdown(f"**Relevance Score:** `{result['distance']:.4f}`")
+                st.divider()  # Separator for readability
         else:
             st.warning("No relevant API found.")
+
     else:
         st.error("Please enter a valid query.")
 

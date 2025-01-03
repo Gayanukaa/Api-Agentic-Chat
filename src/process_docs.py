@@ -16,17 +16,25 @@ def extract_chunks_from_pdf(pdf_path):
 
         for line in lines:
             if line.strip():  # Skip empty lines
-                if line.startswith(("GET", "POST", "PUT", "DELETE")):  # Detect API endpoint definitions
+                parts = line.split(" ")
+                if line.startswith(("GET", "POST", "PUT", "DELETE")) and len(parts) > 1:  # Detect API endpoint definitions
                     if current_chunk:
                         chunks.append({
                             "text": " ".join(current_chunk),
-                            "metadata": current_metadata
-                            })
+                            "metadata": current_metadata.copy()
+                        })
                         current_chunk = []
 
-                    current_metadata["endpoint"] = line.strip()
-                current_chunk.append(line.strip())
+                    # Start a new chunk for the endpoint
+                    current_metadata["endpoint"] = parts[0] + " " + parts[1]
+                elif line.startswith("{") or line.startswith("["):  # Detect JSON body
+                    current_metadata["body"] = line.strip()
+                else:
+                    # Avoid adding duplicate endpoint information to the description
+                    if not line.startswith(("GET", "POST", "PUT", "DELETE")):
+                        current_chunk.append(line.strip())
 
+    # Add the last chunk if not empty
     if current_chunk:
         chunks.append({
             "text": " ".join(current_chunk),
@@ -50,6 +58,6 @@ def process_reference_docs(input_folder, output_file):
 
 if __name__ == "__main__":
     reference_docs_folder = "reference_docs"
-    output_chunks_file = "data/chunks/chunked_data2.json"
+    output_chunks_file = "data/chunks/chunked_data.json"
     os.makedirs(os.path.dirname(output_chunks_file), exist_ok=True)
     process_reference_docs(reference_docs_folder, output_chunks_file)
