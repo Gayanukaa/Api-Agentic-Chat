@@ -1,5 +1,5 @@
 openai
-pinecone-client
+faiss-cpu
 langchain
 pypdf
 tqdm
@@ -7,3 +7,4 @@ streamlit
 numpy
 pandas
 python-dotenv
+langchain-openai
