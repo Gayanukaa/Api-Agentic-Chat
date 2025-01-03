@@ -4,8 +4,10 @@ import numpy as np
 import json
 import os
 
+api_key = os.getenv("OPENAI_API_KEY")
+
 class APISelectorAgent:
-    def __init__(self, faiss_index_file, metadata_file, api_key):
+    def __init__(self, faiss_index_file, metadata_file):
         self.index = faiss.read_index(faiss_index_file)
 
         with open(metadata_file, "r", encoding="utf-8") as f:
@@ -39,8 +41,7 @@ if __name__ == "__main__":
     faiss_index_file = "data/embeddings/faiss_index2"
     metadata_file = "data/embeddings/metadata2.json"
 
-    api_key = os.getenv("OPENAI_API_KEY")
-    agent = APISelectorAgent(faiss_index_file, metadata_file, api_key)
+    agent = APISelectorAgent(faiss_index_file, metadata_file)
 
     query = "How do I retrieve booking details?"
     results = agent.select_api(query, top_k=3)
