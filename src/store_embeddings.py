@@ -23,7 +23,10 @@ def index_embeddings_with_langchain(chunk_file, faiss_index_file, metadata_file)
     for chunk in chunks:
         embedding = embedding_model.embed_query(chunk["text"])
         index.add(np.array([embedding], dtype=np.float32))
-        metadata.append(chunk["metadata"])
+        metadata.append({
+            "text": chunk["text"],
+            **chunk["metadata"]
+        })
 
     faiss.write_index(index, faiss_index_file)
 
@@ -35,9 +38,9 @@ def index_embeddings_with_langchain(chunk_file, faiss_index_file, metadata_file)
     print(f"Metadata saved to {metadata_file}.")
 
 if __name__ == "__main__":
-    chunk_file = "data/chunks/chunked_data.json"
-    faiss_index_file = "data/embeddings/faiss_index"
-    metadata_file = "data/embeddings/metadata.json"
+    chunk_file = "data/chunks/chunked_data2.json"
+    faiss_index_file = "data/embeddings/faiss_index2"
+    metadata_file = "data/embeddings/metadata2.json"
 
     os.makedirs(os.path.dirname(faiss_index_file), exist_ok=True)
     index_embeddings_with_langchain(chunk_file, faiss_index_file, metadata_file)
