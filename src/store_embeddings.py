@@ -1,16 +1,16 @@
-from langchain_openai import OpenAIEmbeddings
 import os
 import json
 import faiss
 import numpy as np
 from dotenv import load_dotenv
+from langchain_openai import OpenAIEmbeddings
 
 load_dotenv()
 openai_api_key = os.getenv("OPENAI_API_KEY")
 
 embedding_model = OpenAIEmbeddings(openai_api_key=openai_api_key)
 
-def index_embeddings_with_langchain(chunk_file, faiss_index_file, metadata_file):
+def index_embeddings(chunk_file, faiss_index_file, metadata_file):
     with open(chunk_file, "r", encoding="utf-8") as f:
         chunks = json.load(f)
 
@@ -45,4 +45,4 @@ if __name__ == "__main__":
     metadata_file = "data/embeddings/metadata.json"
 
     os.makedirs(os.path.dirname(faiss_index_file), exist_ok=True)
-    index_embeddings_with_langchain(chunk_file, faiss_index_file, metadata_file)
+    index_embeddings(chunk_file, faiss_index_file, metadata_file)

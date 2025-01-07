@@ -16,11 +16,10 @@ class APISelectorAgent:
     def select_api(self, query, top_k=3):
         query_embedding = np.array([self.embedding_model.embed_query(query)], dtype=np.float32)
 
-        # Search FAISS index
-        distances, indices = self.index.search(query_embedding, top_k * 5)  # Fetch more results initially
+        distances, indices = self.index.search(query_embedding, top_k * 5)
 
         results = []
-        seen_endpoints = set()  # To track unique endpoints
+        seen_endpoints = set()  # For unique endpoints
 
         # Normalize distances to calculate relevance scores
         min_distance = float(np.min(distances[0]))
@@ -31,45 +30,38 @@ class APISelectorAgent:
             if idx == -1:  # No match found
                 continue
 
-            # Metadata for the chunk
             chunk_metadata = self.metadata[idx]
             endpoint = chunk_metadata.get("endpoint", None)
 
-            # Skip if there's no endpoint or duplicate endpoints
             if not endpoint or endpoint in seen_endpoints:
                 continue
 
-            seen_endpoints.add(endpoint)  # Mark endpoint as seen
+            seen_endpoints.add(endpoint)
 
-            # Trim description to 200 characters
             description = chunk_metadata["text"]
             if len(description) > 200:
                 description = description[:200] + "..."
 
-            # Parse body into structured JSON if applicable
             raw_body = chunk_metadata.get("body", None)
             try:
                 body = json.loads(raw_body) if raw_body else None
             except json.JSONDecodeError:
-                body = None  # Skip if the body is not valid JSON
+                body = None
 
-            # Calculate relevance score (inverse of normalized distance)
             normalized_distance = (distances[0][i] - min_distance) / range_distance
-            relevance_score = 1 - normalized_distance  # Higher is better
+            relevance_score = 1 - normalized_distance
 
             results.append({
                 "endpoint": endpoint,
                 "description": description,
                 "body": body,
                 "file_name": chunk_metadata["file_name"],
-                "distance": relevance_score  # Use the new relevance score
+                "distance": relevance_score
             })
 
-            # Stop when we have enough unique results
             if len(results) >= top_k:
                 break
 
-        # Sort results by the new relevance score in descending order
         results = sorted(results, key=lambda x: x["distance"], reverse=True)
         return results
 
