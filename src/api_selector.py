@@ -15,7 +15,6 @@ class APISelectorAgent:
 
     def select_api(self, query, top_k=10):
         query_embedding = np.array([self.embedding_model.embed_query(query)], dtype=np.float32)
-
         distances, indices = self.index.search(query_embedding, top_k)
 
         results = []
@@ -60,24 +59,3 @@ class APISelectorAgent:
 
         results = sorted(results, key=lambda x: x["distance"], reverse=True)
         return results
-
-
-if __name__ == "__main__":
-    faiss_index_file = "data/embeddings/faiss_index"
-    metadata_file = "data/embeddings/metadata.json"
-
-    api_key = os.getenv("OPENAI_API_KEY")
-    agent = APISelectorAgent(faiss_index_file, metadata_file, api_key)
-
-    query = "How to update passenger info?"
-    results = agent.select_api(query, top_k=3)
-
-    if results:
-        for result in results:
-            print(f"Endpoint: {result['endpoint']}")
-            print(f"Description: {result['text']}")
-            print(f"API Body: {result['body']}")
-            print(f"File Name: {result['file_name']}")
-            print(f"Relevance Score: {result['distance']}\n")
-    else:
-        print("No relevant API found.")
