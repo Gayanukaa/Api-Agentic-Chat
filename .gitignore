@@ -5,7 +5,7 @@ __pycache__/
 
 # Folders
 reference_docs
-data
+data/chunks
 
 # C extensions
 *.so
