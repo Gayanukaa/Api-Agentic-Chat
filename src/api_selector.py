@@ -13,21 +13,20 @@ class APISelectorAgent:
 
         self.embedding_model = OpenAIEmbeddings(openai_api_key=api_key)
 
-    def select_api(self, query, top_k=3):
+    def select_api(self, query, top_k=10):
         query_embedding = np.array([self.embedding_model.embed_query(query)], dtype=np.float32)
 
-        distances, indices = self.index.search(query_embedding, top_k * 5)
+        distances, indices = self.index.search(query_embedding, top_k)
 
         results = []
-        seen_endpoints = set()  # For unique endpoints
+        seen_endpoints = set()
 
-        # Normalize distances to calculate relevance scores
         min_distance = float(np.min(distances[0]))
         max_distance = float(np.max(distances[0]))
         range_distance = max_distance - min_distance if max_distance > min_distance else 1.0
 
         for i, idx in enumerate(indices[0]):
-            if idx == -1:  # No match found
+            if idx == -1:
                 continue
 
             chunk_metadata = self.metadata[idx]
@@ -58,9 +57,6 @@ class APISelectorAgent:
                 "file_name": chunk_metadata["file_name"],
                 "distance": relevance_score
             })
-
-            if len(results) >= top_k:
-                break
 
         results = sorted(results, key=lambda x: x["distance"], reverse=True)
         return results

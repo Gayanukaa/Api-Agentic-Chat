@@ -1,30 +1,15 @@
+import json
+
 class ExplanationAgent:
     def __init__(self, llm):
-        """
-        Initialize the Explanation Agent with an LLM (Large Language Model).
-
-        Parameters:
-        - llm: An object with an `invoke` method for generating text responses.
-        """
         self.llm = llm
 
     def generate_explanation(self, user_query, results):
-        """
-        Generate a detailed explanation for the user query based on relevant API documentation.
-
-        Parameters:
-        - user_query: The query provided by the user.
-        - results: A list of relevant API documentation chunks. Each chunk is a dictionary with keys
-                   like 'endpoint', 'description', and 'file_name'.
-
-        Returns:
-        - A string containing the generated explanation.
-        """
-        # Combine relevant documents into a context
+        # Create a concise context from the selected results
         context = "\n\n".join([
             f"Endpoint: {doc.get('endpoint', 'N/A')}\n"
             f"Description: {doc.get('description', 'N/A')}\n"
-            f"File Name: {doc.get('file_name', 'N/A')}"
+            f"Body: {json.dumps(doc.get('body', {}), indent=2) if doc.get('body') else 'No body available'}"
             for doc in results
         ])
 
@@ -35,16 +20,14 @@ class ExplanationAgent:
         Relevant API Documentation:
         {context}
 
-        Based on the documentation above, explain the process clearly and step-by-step.
+        Based on the documentation, explain the process step-by-step, covering all relevant APIs in a concise and user-friendly manner. Avoid repeating unnecessary information.
         """
         prompt = prompt_template.format(query=user_query, context=context)
 
-        # Generate the explanation using the LLM
+        # Generate the explanation
         explanation = self.llm.invoke([
             {"role": "system", "content": "You are a helpful assistant."},
             {"role": "user", "content": prompt}
         ])
 
         return explanation
-
-
