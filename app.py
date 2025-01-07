@@ -43,7 +43,7 @@ if prompt := st.chat_input("How to retrieve Booking details?"):
     results = agent.select_api(prompt.strip(), top_k=10)
     if results:
         # Pass results directly to the Explanation Agent
-        response = process_agent.generate_explanation(prompt.strip(), results)
+        response = process_agent.generate_explanation(prompt.strip(), results, st.session_state.messages)
 
         # Display the explanation only
         st.chat_message("assistant").markdown(response.content)
