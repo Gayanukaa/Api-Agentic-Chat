@@ -1,6 +1,6 @@
 # API-Agentic-Chat
 
-**API-Agentic-Chat** is a smart chatbot designed to assist users in navigating API documentation efficiently. 
+**API-Agentic-Chat** is a smart chatbot designed to assist users in navigating API documentation efficiently.
 
 [![Python](https://img.shields.io/badge/Python-3.10%2B-blue)](https://www.python.org/)
 [![Streamlit](https://img.shields.io/badge/Built%20with-Streamlit-orange)](https://streamlit.io/)
@@ -8,13 +8,13 @@
 [![OpenAI](https://img.shields.io/badge/Embeddings-OpenAI-blueviolet)](https://openai.com/)
 [![LangChain](https://img.shields.io/badge/Framework-LangChain-lightgrey)](https://langchain.readthedocs.io/)
 
-
 ## Features
 
 - **Natural Language Query**: Users can ask API-related questions in plain language.
 - **Intelligent Retrieval**: Identifies the most relevant APIs using embeddings and FAISS.
 - **Step-by-Step Explanations**: Combines results into a coherent response using a Large Language Model (LLM).
 - **Contextual Understanding**: Maintains context throughout the conversation to provide accurate and relevant information.
+- **API Body Display**: Displays the API body if it is available in the reference documentation.
 
 ## Project Structure
 
@@ -32,7 +32,7 @@ API-Agentic-Chat/
 │   ├── construct_prompt.py  # Explanation Agent
 │   ├── process_docs.py      # PDF processing
 │   ├── store_embeddings.py  # Embedding creation and FAISS indexing
-│── app.py                   # Chatbot interface
+├── app.py                   # Chatbot interface
 ├── .env                     
 ├── requirements.txt         
 ├── README.md                
@@ -100,14 +100,12 @@ API-Agentic-Chat/
    - Start the chatbot interface:
 
      ```bash
-     streamlit run src/streamlit_app.py
+     streamlit run app.py
      ```
 
 4. **Interact with the Chatbot**
    - Ask questions about API usage in plain language (e.g., "How to book a flight?").
-   - Get detailed, step-by-step answers based on relevant API documentation.
-
----
+   - Get detailed, step-by-step answers based on relevant API documentation, including API bodies if available.
 
 ## Agents
 
@@ -120,17 +118,7 @@ API-Agentic-Chat/
 
 - Embeds user queries using OpenAI embeddings.
 - Searches FAISS index for the most relevant chunks.
-- Filters and ranks results by relevance score.
-
-**Output**:
-
-- A list of relevant API chunks, including:
-  - Endpoint
-  - Description
-  - API Body (if available)
-  - Relevance Score
-
----
+- Includes API bodies in results if available in the reference documentation.
 
 ### 2. **Explanation Agent**
 
@@ -143,12 +131,7 @@ API-Agentic-Chat/
 - Generates clear and concise responses tailored to the user query.
 - Ensures no unnecessary repetition or irrelevant details.
 
-**Output**:
-
-- A detailed step-by-step guide using the most relevant APIs.
-
-
 
 ## License
 
-This project is licensed under the MIT License.
+This project is licensed under the [MIT License](https://choosealicense.com/licenses/mit/).
