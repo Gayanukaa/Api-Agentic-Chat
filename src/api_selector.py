@@ -1,8 +1,7 @@
-from langchain_openai import OpenAIEmbeddings
-#from langchain.vectorstores import FAISS
 import os
 from dotenv import load_dotenv
 from langchain_community.vectorstores import FAISS
+from langchain_openai import OpenAIEmbeddings
 
 load_dotenv()
 
@@ -29,23 +28,23 @@ class APISelectorAgent:
             })
 
         return formatted_results
+    
 
+# if __name__ == "__main__":
+#     faiss_directory = "data/embeddings"
+#     api_key = os.getenv("OPENAI_API_KEY")
 
-if __name__ == "__main__":
-    faiss_directory = "data/embeddings"
-    api_key = os.getenv("OPENAI_API_KEY")
+#     agent = APISelectorAgent(faiss_directory, api_key)
 
-    agent = APISelectorAgent(faiss_directory, api_key)
+#     query = "How to update passenger info?"
+#     results = agent.select_api(query, top_k=3)
 
-    query = "How to update passenger info?"
-    results = agent.select_api(query, top_k=3)
-
-    if results:
-        for result in results:
-            print(f"Endpoint: {result['endpoint']}")
-            print(f"Description: {result['description']}")
-            print(f"API Body: {result['body']}")
-            print(f"File Name: {result['file_name']}")
-            print(f"Relevance Score: {result['distance']}\n")
-    else:
-        print("No relevant API found.")
+#     if results:
+#         for result in results:
+#             print(f"Endpoint: {result['endpoint']}")
+#             print(f"Description: {result['description']}")
+#             print(f"API Body: {result['body']}")
+#             print(f"File Name: {result['file_name']}")
+#             print(f"Relevance Score: {result['distance']}\n")
+#     else:
+#         print("No relevant API found.")

@@ -14,7 +14,7 @@ llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.2)
 
 process_agent = ExplanationAgent(llm)
 
-st.title("API Selector Chatbot")
+st.title("Navitaire API Selector")
 st.subheader("Find the most relevant API documentation based on your query.")
 
 if "messages" not in st.session_state:

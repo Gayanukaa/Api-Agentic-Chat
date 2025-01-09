@@ -3,9 +3,8 @@ import os
 import faiss
 import numpy as np
 from dotenv import load_dotenv
-#from langchain.vectorstores import FAISS
-from langchain_openai import OpenAIEmbeddings
 from langchain_community.vectorstores import FAISS
+from langchain_openai import OpenAIEmbeddings
 
 load_dotenv()
 openai_api_key = os.getenv("OPENAI_API_KEY")
