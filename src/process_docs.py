@@ -1,60 +1,44 @@
 import os
 import json
 from pypdf import PdfReader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 def extract_chunks_from_pdf(pdf_path):
     reader = PdfReader(pdf_path)
-    chunks = []
-    current_chunk = []
-    current_metadata = {
-        "file_name": os.path.basename(pdf_path),
-    }
+    text = ""
 
     for page in reader.pages:
-        text = page.extract_text()
-        lines = text.split("\n")
+        text += page.extract_text() + "\n"
 
-        for line in lines:
-            if line.strip():  # Skip empty lines
-                parts = line.split(" ")
-                if line.startswith(("GET", "POST", "PUT", "DELETE")) and len(parts) > 1:  # Detect API endpoint definitions
-                    if current_chunk:
-                        chunks.append({
-                            "text": " ".join(current_chunk),
-                            "metadata": current_metadata.copy()
-                        })
-                        current_chunk = []
+    # Use RecursiveCharacterTextSplitter for better chunking
+    text_splitter = RecursiveCharacterTextSplitter(
+        chunk_size=1000,
+        chunk_overlap=200,
+        separators=["\n\n", "\n", " ", ""],
+    )
+    chunks = text_splitter.split_text(text)
 
-                    # Start a new chunk for the endpoint
-                    current_metadata["endpoint"] = parts[0] + " " + parts[1]
-                elif line.startswith("{") or line.startswith("["):  # Detect JSON body
-                    current_metadata["body"] = line.strip()
-                else:
-                    # Avoid adding duplicate endpoint information to the description
-                    if not line.startswith(("GET", "POST", "PUT", "DELETE")):
-                        current_chunk.append(line.strip())
+    # Generate metadata for each chunk
+    metadata = [{"file_name": os.path.basename(pdf_path)} for _ in chunks]
+    return chunks, metadata
 
-    # Add the last chunk if not empty
-    if current_chunk:
-        chunks.append({
-            "text": " ".join(current_chunk),
-            "metadata": current_metadata
-        })
+def process_reference_docs(input_folder, output_chunks_file):
+    all_texts = []
+    all_metadata = []
 
-    return chunks
-
-def process_reference_docs(input_folder, output_file):
-    all_chunks = []
     for file_name in os.listdir(input_folder):
         if file_name.endswith(".pdf"):
             file_path = os.path.join(input_folder, file_name)
             print(f"Processing {file_path}...")
-            chunks = extract_chunks_from_pdf(file_path)
-            all_chunks.extend(chunks)
 
-    with open(output_file, "w", encoding="utf-8") as f:
-        json.dump(all_chunks, f, indent=4)
-    print(f"Saved structured chunks to {output_file}")
+            chunks, metadata = extract_chunks_from_pdf(file_path)
+            all_texts.extend(chunks)
+            all_metadata.extend(metadata)
+
+    # Save chunks and metadata
+    with open(output_chunks_file, "w", encoding="utf-8") as f:
+        json.dump({"texts": all_texts, "metadata": all_metadata}, f, indent=4)
+    print(f"Saved structured chunks to {output_chunks_file}")
 
 if __name__ == "__main__":
     reference_docs_folder = "reference_docs"
