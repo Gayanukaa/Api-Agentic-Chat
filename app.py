@@ -16,7 +16,7 @@ METADATA_FILE = "data/embeddings/metadata.json"
 api_key = os.getenv("OPENAI_API_KEY")
 agent = APISelectorAgent(FAISS_INDEX_FILE, METADATA_FILE, api_key)
 
-llm = ChatOpenAI(model="gpt-4", temperature=0.7)
+llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.2)
 
 process_agent = ExplanationAgent(llm)
 
