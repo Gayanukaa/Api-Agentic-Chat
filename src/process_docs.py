@@ -18,8 +18,20 @@ def extract_chunks_from_pdf(pdf_path):
     )
     chunks = text_splitter.split_text(text)
 
-    # Generate metadata for each chunk
-    metadata = [{"file_name": os.path.basename(pdf_path)} for _ in chunks]
+    metadata = []
+    for chunk in chunks:
+        # Detect if the chunk contains an API body (e.g., JSON-like content)
+        body = None
+        if "{" in chunk and "}" in chunk:
+            body_start = chunk.find("{")
+            body_end = chunk.rfind("}") + 1
+            body = chunk[body_start:body_end]
+
+        metadata.append({
+            "file_name": os.path.basename(pdf_path),
+            "body": body,
+        })
+
     return chunks, metadata
 
 def process_reference_docs(input_folder, output_chunks_file):

@@ -13,14 +13,13 @@ openai_api_key = os.getenv("OPENAI_API_KEY")
 embedding_model = OpenAIEmbeddings(openai_api_key=openai_api_key)
 
 def index_embeddings(chunk_file, faiss_directory):
-    # Load chunks and metadata
     with open(chunk_file, "r", encoding="utf-8") as f:
         data = json.load(f)
 
     texts = data["texts"]
     metadatas = data["metadata"]
 
-    # Create FAISS index with LangChain
+    # Create FAISS index with LangChain Community FAISS
     vectorstore = FAISS.from_texts(texts, embedding_model, metadatas=metadatas)
 
     # Save FAISS index locally

@@ -8,11 +8,10 @@ load_dotenv()
 
 class APISelectorAgent:
     def __init__(self, faiss_directory, api_key):
-        # Enable dangerous deserialization (only if you trust the file)
         self.vectorstore = FAISS.load_local(
             faiss_directory,
             OpenAIEmbeddings(openai_api_key=api_key),
-            allow_dangerous_deserialization=True  # Add this flag
+            allow_dangerous_deserialization=True
         )
 
     def select_api(self, query, top_k=10):
@@ -24,7 +23,7 @@ class APISelectorAgent:
             formatted_results.append({
                 "endpoint": metadata.get("endpoint"),
                 "description": doc.page_content[:200] + "..." if len(doc.page_content) > 200 else doc.page_content,
-                "body": metadata.get("body"),
+                "body": metadata.get("body") if metadata.get("body") else "No body available",
                 "file_name": metadata.get("file_name"),
                 "distance": score
             })
